@@ -7,6 +7,10 @@ import java.util.Scanner;
 
 /**
  * Created by Vincent on 4/20/2017.
+ * CS 380 Project 2
+ *
+ * Physical layer simulation.
+ *
  */
 public class PhysLayerClient {
 
@@ -36,23 +40,28 @@ public class PhysLayerClient {
             BufferedReader br = new BufferedReader(isr);
             OutputStream os = socket.getOutputStream();
             PrintStream out = new PrintStream(os, true, "UTF-8");
+
             int count = 0, arrayCounter = 0;
 
-            for (count = 0; count < 64; count++)
+            for (count = 0; count < 64; count++)                                /*calculate baseline*/
                 baseline += is.read();
 
             baseline /= 64;
-            System.out.println("Basline established from preamble: " + baseline);
+
+            System.out.println("Baseline established from preamble: " + baseline);
+
             while (arrayCounter != bytesArray.length) {
                 bytes = is.read();
+
                 if (bytes > baseline)
-                    bytesArray[arrayCounter++] = 1;
+                    bytesArray[arrayCounter++] = 1;          /*Build bits accordingly to preamble*/
                 else
                     bytesArray[arrayCounter++] = 0;
 
 //                System.out.println(bytes + "    " + Long.toBinaryString(bytes) + "\tcount is : " + count +
 //                        "\n bytesarray[" + (arrayCounter - 1) + "] = " + bytesArray[arrayCounter - 1]);
             }
+
             nrziDecoder();
 
             os.write(bytesArray);
@@ -69,6 +78,21 @@ public class PhysLayerClient {
 
 
     }
+
+
+    /**
+     * @Params NONE @ReturnType VOID
+     * method: nrziDecoder
+     *
+     * decodes a message that was encoded by NRZI
+     * builds off of first bit.
+     *
+     * STEPS:
+     *  1. save first bit.
+     *  2. compare next bit to first bit.
+     *  3. if next bit is same -- decode the message as a '0'. else its a '1'.
+     *
+     */
 
     private void nrziDecoder() {
 
@@ -100,6 +124,21 @@ public class PhysLayerClient {
 
     }
 
+
+    /**
+     * @PARAMS NONE @RETURNTYPE VOID
+     * method: fiveBitFourBitConverter()
+     *
+     *  STEPS:
+     *  1. Use nested forloop to separate the bits to sets of five.
+     *  2. Build the 5-bit data pieces using a String
+     *  3. Use a switch statement as a lookup table.
+     *  4. Build a 4-bit data piece corresponding to the lookup table and store into an array.
+     *  5. Convert this bitArray to a byteArray by splitting it up into 8-bit pieces of data.
+     *  6. Parse the 8-bit data using Integer.parse(someString, baseNumber) \ in our case base 2.
+     *  7. Assign array to global array.
+     *
+     */
     private void fiveBitFourBitConverter() {
 
         byte[] newBitArray = new byte[(int) (bytesArray.length * 0.8)];
